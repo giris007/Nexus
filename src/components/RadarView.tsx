@@ -34,11 +34,11 @@ const INITIAL_NEARBY_USERS: NearbyUser[] = [
     id: 'nb-1',
     name: 'Rohan Mehta',
     avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=120&auto=format&fit=crop&q=80',
-    distance: '6m away',
+    distance: '8m away',
     locationTag: 'Coach B4 • Seat 24',
     activity: 'Working on React & Rust',
-    angle: 45,
-    radiusPercent: 38,
+    angle: 40,
+    radiusPercent: 58,
     status: 'idle'
   },
   {
@@ -48,8 +48,8 @@ const INITIAL_NEARBY_USERS: NearbyUser[] = [
     distance: '12m away',
     locationTag: 'Coach B4 • Seat 48',
     activity: 'Listening to Lo-Fi playlist',
-    angle: 150,
-    radiusPercent: 62,
+    angle: 155,
+    radiusPercent: 72,
     status: 'idle'
   },
   {
@@ -59,8 +59,8 @@ const INITIAL_NEARBY_USERS: NearbyUser[] = [
     distance: '18m away',
     locationTag: 'Coach B3 • Vestibule',
     activity: 'Reading Sci-Fi novels',
-    angle: 280,
-    radiusPercent: 82,
+    angle: 275,
+    radiusPercent: 86,
     status: 'idle'
   }
 ];
@@ -405,32 +405,32 @@ export const RadarView: React.FC<RadarViewProps> = ({ onStartChatWithUser }) => 
             borderColor: 'var(--border)'
           }}
         >
-          {/* True 1:1 Circular Radar Dial Scope (No oval distortion) */}
-          <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full flex items-center justify-center overflow-hidden border border-blue-500/25 bg-black/5 dark:bg-black/40 shadow-inner">
+          {/* True 1:1 Circular Radar Dial Scope - Crisp Deep Space HUD */}
+          <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full flex items-center justify-center overflow-hidden border-2 border-cyan-500/30 bg-[#090d16] shadow-xl">
             {/* Subtle Crosshairs */}
-            <div className="absolute inset-x-0 top-1/2 h-px bg-blue-500/15 pointer-events-none" />
-            <div className="absolute inset-y-0 left-1/2 w-px bg-blue-500/15 pointer-events-none" />
+            <div className="absolute inset-x-0 top-1/2 h-px bg-cyan-500/20 pointer-events-none" />
+            <div className="absolute inset-y-0 left-1/2 w-px bg-cyan-500/20 pointer-events-none" />
 
             {/* Concentric Distance Rings with Micro Distance Badges */}
-            <div className="absolute w-[86%] h-[86%] rounded-full border border-dashed border-blue-500/25 pointer-events-none flex items-start justify-center pt-1">
-              <span className="text-[8px] font-mono font-semibold text-blue-500/60">20m</span>
+            <div className="absolute w-[86%] h-[86%] rounded-full border border-dashed border-cyan-500/30 pointer-events-none flex items-start justify-center pt-1">
+              <span className="text-[8px] font-mono font-bold text-cyan-400/80">20m</span>
             </div>
-            <div className="absolute w-[60%] h-[60%] rounded-full border border-blue-500/20 pointer-events-none flex items-start justify-center pt-1">
-              <span className="text-[8px] font-mono font-semibold text-blue-500/60">10m</span>
+            <div className="absolute w-[60%] h-[60%] rounded-full border border-cyan-500/25 pointer-events-none flex items-start justify-center pt-1">
+              <span className="text-[8px] font-mono font-bold text-cyan-400/80">10m</span>
             </div>
-            <div className="absolute w-[34%] h-[34%] rounded-full border border-blue-500/25 pointer-events-none flex items-start justify-center pt-1">
-              <span className="text-[8px] font-mono font-semibold text-blue-500/60">5m</span>
+            <div className="absolute w-[36%] h-[36%] rounded-full border border-cyan-500/30 pointer-events-none flex items-start justify-center pt-1">
+              <span className="text-[8px] font-mono font-bold text-cyan-400/80">5m</span>
             </div>
 
             {/* Sonar Ripple Pulse Waves */}
             {isScanning && (
               <>
                 <div
-                  className="absolute w-28 h-28 rounded-full border border-blue-500/30 animate-ping pointer-events-none"
+                  className="absolute w-28 h-28 rounded-full border border-cyan-400/40 animate-ping pointer-events-none"
                   style={{ animationDuration: '3s' }}
                 />
                 <div
-                  className="absolute w-44 h-44 rounded-full border border-blue-500/20 animate-ping pointer-events-none"
+                  className="absolute w-44 h-44 rounded-full border border-cyan-500/30 animate-ping pointer-events-none"
                   style={{ animationDuration: '3.6s', animationDelay: '1.2s' }}
                 />
               </>
@@ -442,7 +442,7 @@ export const RadarView: React.FC<RadarViewProps> = ({ onStartChatWithUser }) => 
                 className="absolute inset-0 rounded-full pointer-events-none animate-spin"
                 style={{
                   animationDuration: '3.8s',
-                  background: 'conic-gradient(from 0deg, rgba(37, 99, 235, 0.45) 0deg, rgba(37, 99, 235, 0.08) 55deg, transparent 70deg, transparent 360deg)'
+                  background: 'conic-gradient(from 0deg, rgba(6, 182, 212, 0.45) 0deg, rgba(6, 182, 212, 0.08) 55deg, transparent 70deg, transparent 360deg)'
                 }}
               />
             )}
