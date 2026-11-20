@@ -405,32 +405,32 @@ export const RadarView: React.FC<RadarViewProps> = ({ onStartChatWithUser }) => 
             borderColor: 'var(--border)'
           }}
         >
-          {/* True 1:1 Circular Radar Dial Scope - Crisp Deep Space HUD */}
-          <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full flex items-center justify-center overflow-hidden border-2 border-cyan-500/30 bg-[#090d16] shadow-xl">
+          {/* True 1:1 Circular Radar Dial Scope - Luminous Theme-Adaptive Glass */}
+          <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full flex items-center justify-center overflow-hidden border border-blue-200/80 dark:border-cyan-500/30 bg-gradient-to-b from-blue-50/70 to-slate-100/90 dark:from-[#090d16] dark:to-[#050811] shadow-inner">
             {/* Subtle Crosshairs */}
-            <div className="absolute inset-x-0 top-1/2 h-px bg-cyan-500/20 pointer-events-none" />
-            <div className="absolute inset-y-0 left-1/2 w-px bg-cyan-500/20 pointer-events-none" />
+            <div className="absolute inset-x-0 top-1/2 h-px bg-blue-500/20 dark:bg-cyan-500/20 pointer-events-none" />
+            <div className="absolute inset-y-0 left-1/2 w-px bg-blue-500/20 dark:bg-cyan-500/20 pointer-events-none" />
 
             {/* Concentric Distance Rings with Micro Distance Badges */}
-            <div className="absolute w-[86%] h-[86%] rounded-full border border-dashed border-cyan-500/30 pointer-events-none flex items-start justify-center pt-1">
-              <span className="text-[8px] font-mono font-bold text-cyan-400/80">20m</span>
+            <div className="absolute w-[86%] h-[86%] rounded-full border border-dashed border-blue-500/30 dark:border-cyan-500/30 pointer-events-none flex items-start justify-center pt-1">
+              <span className="text-[8px] font-mono font-bold text-blue-600/80 dark:text-cyan-400/80">20m</span>
             </div>
-            <div className="absolute w-[60%] h-[60%] rounded-full border border-cyan-500/25 pointer-events-none flex items-start justify-center pt-1">
-              <span className="text-[8px] font-mono font-bold text-cyan-400/80">10m</span>
+            <div className="absolute w-[60%] h-[60%] rounded-full border border-blue-500/25 dark:border-cyan-500/25 pointer-events-none flex items-start justify-center pt-1">
+              <span className="text-[8px] font-mono font-bold text-blue-600/80 dark:text-cyan-400/80">10m</span>
             </div>
-            <div className="absolute w-[36%] h-[36%] rounded-full border border-cyan-500/30 pointer-events-none flex items-start justify-center pt-1">
-              <span className="text-[8px] font-mono font-bold text-cyan-400/80">5m</span>
+            <div className="absolute w-[36%] h-[36%] rounded-full border border-blue-500/30 dark:border-cyan-500/30 pointer-events-none flex items-start justify-center pt-1">
+              <span className="text-[8px] font-mono font-bold text-blue-600/80 dark:text-cyan-400/80">5m</span>
             </div>
 
             {/* Sonar Ripple Pulse Waves */}
             {isScanning && (
               <>
                 <div
-                  className="absolute w-28 h-28 rounded-full border border-cyan-400/40 animate-ping pointer-events-none"
+                  className="absolute w-28 h-28 rounded-full border border-blue-500/35 dark:border-cyan-400/40 animate-ping pointer-events-none"
                   style={{ animationDuration: '3s' }}
                 />
                 <div
-                  className="absolute w-44 h-44 rounded-full border border-cyan-500/30 animate-ping pointer-events-none"
+                  className="absolute w-44 h-44 rounded-full border border-blue-500/25 dark:border-cyan-500/30 animate-ping pointer-events-none"
                   style={{ animationDuration: '3.6s', animationDelay: '1.2s' }}
                 />
               </>
@@ -442,7 +442,7 @@ export const RadarView: React.FC<RadarViewProps> = ({ onStartChatWithUser }) => 
                 className="absolute inset-0 rounded-full pointer-events-none animate-spin"
                 style={{
                   animationDuration: '3.8s',
-                  background: 'conic-gradient(from 0deg, rgba(6, 182, 212, 0.45) 0deg, rgba(6, 182, 212, 0.08) 55deg, transparent 70deg, transparent 360deg)'
+                  background: 'conic-gradient(from 0deg, rgba(37, 99, 235, 0.35) 0deg, rgba(37, 99, 235, 0.06) 55deg, transparent 70deg, transparent 360deg)'
                 }}
               />
             )}
@@ -460,10 +460,10 @@ export const RadarView: React.FC<RadarViewProps> = ({ onStartChatWithUser }) => 
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-black shadow-xs animate-pulse" />
               </div>
               <div className="flex flex-col items-center mt-1">
-                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-black/70 text-white backdrop-blur-xs shadow-xs">
+                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-white/95 dark:bg-black/85 text-gray-800 dark:text-white border border-black/10 dark:border-white/15 shadow-xs">
                   You
                 </span>
-                <span className="text-[8px] font-medium text-blue-400 font-mono mt-0.5 bg-black/60 px-1 rounded-sm">
+                <span className="text-[8px] font-bold text-blue-600 dark:text-cyan-300 font-mono mt-0.5 bg-blue-50/90 dark:bg-black/70 px-1 rounded-sm border border-blue-200/50 dark:border-white/10">
                   {myTag.coach ? `${myTag.coach}-${myTag.seat}` : `Seat ${myTag.seat}`}
                 </span>
               </div>
@@ -499,11 +499,11 @@ export const RadarView: React.FC<RadarViewProps> = ({ onStartChatWithUser }) => 
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-col items-center mt-1 px-1.5 py-0.5 rounded-lg bg-black/80 dark:bg-black/90 text-white backdrop-blur-md shadow-md border border-white/10 max-w-[96px] text-center">
-                    <span className="text-[9px] font-semibold truncate w-full">
+                  <div className="flex flex-col items-center mt-1 px-1.5 py-0.5 rounded-lg bg-white/95 dark:bg-black/85 text-gray-900 dark:text-white backdrop-blur-md shadow-sm border border-black/10 dark:border-white/15 max-w-[96px] text-center">
+                    <span className="text-[9px] font-bold truncate w-full">
                       {user.name.split(' ')[0]}
                     </span>
-                    <span className="text-[7.5px] text-blue-300 font-mono leading-none truncate w-full">
+                    <span className="text-[7.5px] text-blue-600 dark:text-cyan-300 font-mono font-semibold leading-none truncate w-full">
                       {user.locationTag.replace('Coach ', '')}
                     </span>
                   </div>
@@ -552,7 +552,7 @@ export const RadarView: React.FC<RadarViewProps> = ({ onStartChatWithUser }) => 
                     <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>
                       {user.name}
                     </p>
-                    <span className="text-[10px] px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500 font-medium shrink-0">
+                    <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/15 shrink-0">
                       {user.distance}
                     </span>
                   </div>
