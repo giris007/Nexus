@@ -360,33 +360,41 @@ export const MomentsFeed: React.FC = () => {
   return (
     <div className="flex-1 h-full overflow-y-auto flex flex-col items-center select-none" style={{ backgroundColor: 'var(--bg)' }}>
       <div className="w-full max-w-xl px-3 sm:px-4 py-3 space-y-3.5">
-        {/* Minimal Unified Top Tabs (Threads / X Style) */}
+        {/* Minimal Unified Top Tabs */}
         <div
           className="grid grid-cols-3 p-1 rounded-2xl border shadow-xs"
           style={{ backgroundColor: 'var(--bg-panel)', borderColor: 'var(--border)' }}
         >
           <button
             onClick={() => setFeedTab('forYou')}
-            className={`py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 ${
-              feedTab === 'forYou' ? 'bg-white dark:bg-zinc-800 shadow-xs' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-            }`}
-            style={feedTab === 'forYou' ? { color: 'var(--text-1)' } : {}}
+            className="py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95"
+            style={{
+              backgroundColor: feedTab === 'forYou' ? 'var(--accent)' : 'transparent',
+              color: feedTab === 'forYou' ? '#ffffff' : 'var(--text-2)'
+            }}
           >
-            <Flame className={`w-3.5 h-3.5 ${feedTab === 'forYou' ? 'text-amber-500' : ''}`} />
+            <Flame className={`w-3.5 h-3.5 ${feedTab === 'forYou' ? 'text-amber-300' : 'text-gray-400'}`} />
             <span>For You</span>
           </button>
 
           <button
             onClick={() => setFeedTab('following')}
-            className={`py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 ${
-              feedTab === 'following' ? 'bg-white dark:bg-zinc-800 shadow-xs' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-            }`}
-            style={feedTab === 'following' ? { color: 'var(--text-1)' } : {}}
+            className="py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95"
+            style={{
+              backgroundColor: feedTab === 'following' ? 'var(--accent)' : 'transparent',
+              color: feedTab === 'following' ? '#ffffff' : 'var(--text-2)'
+            }}
           >
-            <UserCheck className={`w-3.5 h-3.5 ${feedTab === 'following' ? 'text-blue-500' : ''}`} />
+            <UserCheck className={`w-3.5 h-3.5 ${feedTab === 'following' ? 'text-white' : 'text-gray-400'}`} />
             <span>Following</span>
             {followingHandles.length > 0 && (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-blue-500/10 text-blue-600">
+              <span
+                className="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
+                style={{
+                  backgroundColor: feedTab === 'following' ? 'rgba(255,255,255,0.22)' : 'var(--accent-subtle)',
+                  color: feedTab === 'following' ? '#ffffff' : 'var(--accent-text)'
+                }}
+              >
                 {followingHandles.length}
               </span>
             )}
@@ -394,12 +402,13 @@ export const MomentsFeed: React.FC = () => {
 
           <button
             onClick={() => setFeedTab('scenes')}
-            className={`py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 ${
-              feedTab === 'scenes' ? 'bg-white dark:bg-zinc-800 shadow-xs' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-            }`}
-            style={feedTab === 'scenes' ? { color: 'var(--text-1)' } : {}}
+            className="py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95"
+            style={{
+              backgroundColor: feedTab === 'scenes' ? 'var(--accent)' : 'transparent',
+              color: feedTab === 'scenes' ? '#ffffff' : 'var(--text-2)'
+            }}
           >
-            <Film className={`w-3.5 h-3.5 ${feedTab === 'scenes' ? 'text-purple-500' : ''}`} />
+            <Film className={`w-3.5 h-3.5 ${feedTab === 'scenes' ? 'text-white' : 'text-gray-400'}`} />
             <span>Scenes</span>
           </button>
         </div>
