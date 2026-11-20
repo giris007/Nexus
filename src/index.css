@@ -213,6 +213,34 @@
 .animate-typing-2 { animation: typingWave 1.2s infinite ease-in-out 0.2s; }
 .animate-typing-3 { animation: typingWave 1.2s infinite ease-in-out 0.4s; }
 
+/* ─── Double Tap Heart Burst Animation ─── */
+@keyframes heartBurst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0) rotate(-15deg);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.4) rotate(0deg);
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(1.1) rotate(6deg);
+  }
+  75% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2) translateY(-20px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5) translateY(-45px);
+  }
+}
+
+.animate-heart-burst {
+  animation: heartBurst 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+}
+
 /* ─── Scrollbars — invisible on mobile, subtle on desktop ─── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }

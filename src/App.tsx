@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { MessageSquare, Radio, Compass, ArrowLeft } from 'lucide-react';
+import { MessageSquare, Radio, Compass, Radar, ArrowLeft } from 'lucide-react';
 import { Chat, Message, User, MiniAppPayload } from './types';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { MomentsFeed } from './components/MomentsFeed';
+import { RadarView } from './components/RadarView';
 import { MiniAppsHub } from './components/MiniAppsHub';
 import { MiniAppModal } from './components/MiniAppModal';
 import { VideoCallModal } from './components/VideoCallModal';
@@ -33,7 +34,7 @@ const TEST_USERS: User[] = [
 
 export function App() {
   const [currentUser, setCurrentUser] = useState<User>(TEST_USERS[0]);
-  const [activeTab, setActiveTab] = useState<'chats' | 'moments' | 'miniapps'>('chats');
+  const [activeTab, setActiveTab] = useState<'chats' | 'radar' | 'moments' | 'miniapps'>('chats');
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string>('chat-ai');
   const activeChatIdRef = useRef<string>(activeChatId);
@@ -470,13 +471,53 @@ export function App() {
           </>
         )}
 
+        {activeTab === 'radar' && (
+          <RadarView
+            onStartChatWithUser={(userName, userAvatar) => {
+              const newChatId = `chat-radar-${Date.now()}`;
+              const newChat: Chat = {
+                id: newChatId,
+                name: userName,
+                avatar: userAvatar,
+                isGroup: false,
+                online: true,
+                status: 'Connected via Radar',
+                lastMessage: 'Connected via Nexus Radar',
+                lastTimestamp: 'Now',
+                unreadCount: 0,
+                pinned: false,
+                participants: [currentUser.id, newChatId]
+              };
+              setChats(prev => [newChat, ...prev]);
+              setActiveChatId(newChatId);
+              setActiveTab('chats');
+              setIsMobileChatOpen(true);
+              setMessages(prev => [
+                ...prev,
+                {
+                  id: `msg-${Date.now()}`,
+                  chatId: newChatId,
+                  senderId: 'system',
+                  senderName: 'System',
+                  senderAvatar: userAvatar,
+                  text: 'Connected securely via Nexus Radar. No phone numbers were exchanged.',
+                  timestamp: 'Now',
+                  type: 'text',
+                  reactions: {},
+                  status: 'delivered'
+                }
+              ]);
+            }}
+          />
+        )}
+
         {activeTab === 'moments' && <MomentsFeed />}
 
         {activeTab === 'miniapps' && <MiniAppsHub />}
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="md:hidden h-14 grid grid-cols-3 shrink-0 z-30 select-none pb-safe border-t" style={{ backgroundColor: 'var(--bg-panel)', borderColor: 'var(--border)' }}>
+      <nav className="md:hidden h-14 grid grid-cols-4 shrink-0 z-30 select-none pb-safe border-t" style={{ backgroundColor: 'var(--bg-panel)', borderColor: 'var(--border)' }}>
         <button
           onClick={() => {
             setActiveTab('chats');
@@ -487,6 +528,15 @@ export function App() {
         >
           <MessageSquare className="w-5 h-5" />
           <span className="text-[10px]">Messages</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('radar')}
+          className="flex flex-col items-center justify-center gap-1 transition"
+          style={{ color: activeTab === 'radar' ? 'var(--accent)' : 'var(--text-2)', fontWeight: activeTab === 'radar' ? 600 : 400 }}
+        >
+          <Radar className="w-5 h-5" />
+          <span className="text-[10px]">Radar</span>
         </button>
 
         <button

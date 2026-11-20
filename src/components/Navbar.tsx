@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, Compass, Radio, Sun, Moon, Check, ChevronDown } from 'lucide-react';
+import { MessageSquare, Compass, Radio, Radar, Sun, Moon, Check, ChevronDown } from 'lucide-react';
 import { User } from '../types';
 import { useTheme } from '../ThemeContext';
 
 interface NavbarProps {
-  activeTab: 'chats' | 'moments' | 'miniapps';
-  onSelectTab: (tab: 'chats' | 'moments' | 'miniapps') => void;
+  activeTab: 'chats' | 'radar' | 'moments' | 'miniapps';
+  onSelectTab: (tab: 'chats' | 'radar' | 'moments' | 'miniapps') => void;
   currentUser: User;
   onSwitchUser: (user: User) => void;
   availableUsers: User[];
@@ -62,9 +62,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border)' }}
       >
         {([
-          { id: 'chats' as const,    label: 'Messages', icon: MessageSquare },
-          { id: 'moments' as const,  label: 'Feed',     icon: Radio },
-          { id: 'miniapps' as const, label: 'Applets',  icon: Compass },
+          { id: 'chats' as const, label: 'Messages', icon: MessageSquare },
+          { id: 'radar' as const, label: 'Radar', icon: Radar },
+          { id: 'moments' as const, label: 'Feed', icon: Radio },
+          { id: 'miniapps' as const, label: 'Applets', icon: Compass },
         ]).map(({ id, label, icon: Icon }) => (
           <button
             key={id}

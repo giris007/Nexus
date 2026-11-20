@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Send, Mic, Smile, Phone, Video, MoreVertical, CheckCheck, Sparkles, Plus, ShieldCheck, Reply, X, Image, FileText, Download, Camera } from 'lucide-react';
 import { Chat, Message, MiniAppPayload } from '../types';
 import { MiniAppRenderer, VoicePlayer } from './MiniAppCards';
+import { EmojiPicker } from './EmojiPicker';
 
 interface ChatAreaProps {
   chat: Chat | undefined;
@@ -39,16 +40,28 @@ const SwipeableBubble: React.FC<SwipeableBubbleProps> = ({
   msg, isMe, isGroup, currentUserId, onSwipeReply, onToggleReaction, onUpdateMiniApp
 }) => {
   const [swipeOffset, setSwipeOffset] = useState(0);
+  const [showReactions, setShowReactions] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTapRef = useRef<number>(0);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    longPressTimerRef.current = setTimeout(() => {
+      setShowReactions(true);
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate(20); } catch {}
+      }
+    }, 450);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!touchStartRef.current) return;
     const dx = e.touches[0].clientX - touchStartRef.current.x;
     const dy = e.touches[0].clientY - touchStartRef.current.y;
+    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+    }
     if (Math.abs(dy) > Math.abs(dx) && swipeOffset === 0) return;
     if (dx > 0) {
       setSwipeOffset(Math.min(50, dx * 0.6));
@@ -56,6 +69,7 @@ const SwipeableBubble: React.FC<SwipeableBubbleProps> = ({
   };
 
   const handleTouchEnd = () => {
+    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
     if (swipeOffset > 32) {
       onSwipeReply(msg);
       if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
@@ -64,6 +78,17 @@ const SwipeableBubble: React.FC<SwipeableBubbleProps> = ({
     }
     setSwipeOffset(0);
     touchStartRef.current = null;
+  };
+
+  const handleBubbleClick = () => {
+    const now = Date.now();
+    if (now - lastTapRef.current < 300) {
+      // Double tap toggles reaction bar or gives heart
+      setShowReactions(prev => !prev);
+      lastTapRef.current = 0;
+    } else {
+      lastTapRef.current = now;
+    }
   };
 
   return (
@@ -89,7 +114,10 @@ const SwipeableBubble: React.FC<SwipeableBubbleProps> = ({
       </div>
 
       <div
-        className="max-w-[82%] sm:max-w-[68%] rounded-2xl px-3.5 py-2.5 shadow-sm transition-transform duration-150"
+        onClick={handleBubbleClick}
+        className={`max-w-[82%] sm:max-w-[68%] rounded-2xl px-3.5 py-2.5 shadow-sm transition-transform duration-150 relative cursor-pointer ${
+          Object.keys(msg.reactions || {}).length > 0 ? 'mb-2' : ''
+        }`}
         style={{
           transform: swipeOffset > 0 ? `translateX(${swipeOffset}px)` : 'none',
           backgroundColor: isMe ? 'var(--bubble-out)' : 'var(--bubble-in)',
@@ -153,27 +181,56 @@ const SwipeableBubble: React.FC<SwipeableBubbleProps> = ({
           {isMe && <CheckCheck className={`w-3.5 h-3.5 ${msg.status === 'read' ? 'opacity-100' : 'opacity-50'}`} />}
         </div>
 
-        {/* Reactions */}
+        {/* Reactions Pill (Anchored to Bubble Corner) */}
         {Object.keys(msg.reactions || {}).length > 0 && (
-          <div className="absolute -bottom-2 right-2 flex gap-1 rounded-full px-2 py-0.5 shadow"
-            style={{ backgroundColor: 'var(--bg-panel)', border: '1px solid var(--border)' }}>
+          <div
+            className={`absolute -bottom-2.5 ${isMe ? 'right-2' : 'left-2'} z-10 flex items-center gap-1 rounded-full px-2 py-0.5 shadow-sm border`}
+            style={{ backgroundColor: 'var(--bg-panel)', borderColor: 'var(--border)' }}
+          >
             {Object.entries(msg.reactions).map(([emoji, users]) => (
-              <span key={emoji} onClick={() => onToggleReaction(msg.id, emoji)}
-                className="text-xs cursor-pointer hover:scale-125 transition flex items-center gap-0.5">
-                {emoji}
-                {users.length > 1 && <span className="text-[9px]" style={{ color: 'var(--text-3)' }}>{users.length}</span>}
-              </span>
+              <button
+                key={emoji}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleReaction(msg.id, emoji);
+                }}
+                className="text-xs cursor-pointer hover:scale-125 active:scale-95 transition flex items-center gap-0.5"
+              >
+                <span>{emoji}</span>
+                {users.length > 1 && (
+                  <span className="text-[10px] font-semibold" style={{ color: 'var(--text-2)' }}>
+                    {users.length}
+                  </span>
+                )}
+              </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* Quick reactions (hover) */}
-      <div className={`opacity-0 group-hover:opacity-100 transition flex items-center gap-1 rounded-full px-2 py-0.5 my-1 ${isMe ? 'mr-1' : 'ml-1'}`}
-        style={{ backgroundColor: 'var(--bg-panel)', border: '1px solid var(--border)' }}>
-        {['👍','❤️','😂','🔥','👏'].map(e => (
-          <button key={e} onClick={() => onToggleReaction(msg.id, e)}
-            className="text-xs hover:scale-125 active:scale-95 transition">{e}</button>
+      {/* Quick Reactions Bar (Hover on desktop, double-tap/long-press on mobile) */}
+      <div
+        className={`absolute -top-7 ${isMe ? 'right-2' : 'left-2'} z-20 transition-all duration-150 flex items-center gap-1 rounded-full px-2 py-0.5 shadow-md border ${
+          showReactions
+            ? 'opacity-100 pointer-events-auto scale-100'
+            : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto scale-95 group-hover:scale-100'
+        }`}
+        style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)' }}
+      >
+        {['👍', '❤️', '😂', '🔥', '👏', '🎉'].map(emoji => (
+          <button
+            key={emoji}
+            type="button"
+            onClick={(evt) => {
+              evt.stopPropagation();
+              onToggleReaction(msg.id, emoji);
+              setShowReactions(false);
+            }}
+            className="text-xs hover:scale-130 active:scale-90 transition p-0.5"
+          >
+            {emoji}
+          </button>
         ))}
       </div>
     </div>
@@ -190,6 +247,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   const [recordDuration, setRecordDuration] = useState(0);
   const [replyingToMessage, setReplyingToMessage] = useState<Message | null>(null);
   const [isAttachOpen, setIsAttachOpen] = useState(false);
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const mediaInputRef = useRef<HTMLInputElement>(null);
   const docInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -264,6 +322,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     onSendMessage(textToSend, 'text');
     setInputText('');
     setReplyingToMessage(null);
+    setIsEmojiPickerOpen(false);
     onTyping(false);
   };
 
@@ -513,6 +572,16 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         <input ref={mediaInputRef} type="file" accept="image/*,video/*" className="hidden" onChange={handleMediaSelect} />
         <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" className="hidden" onChange={handleDocSelect} />
 
+        {/* Emoji Picker Popover */}
+        <EmojiPicker
+          isOpen={isEmojiPickerOpen}
+          onSelectEmoji={emoji => {
+            setInputText(prev => prev + emoji);
+            onTyping(true);
+          }}
+          onClose={() => setIsEmojiPickerOpen(false)}
+        />
+
         {/* Attachment menu sheet */}
         {isAttachOpen && (
           <div
@@ -612,7 +681,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
           <form onSubmit={handleSend} className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setIsAttachOpen(!isAttachOpen)}
+              onClick={() => {
+                setIsAttachOpen(!isAttachOpen);
+                setIsEmojiPickerOpen(false);
+              }}
               className={`w-9 h-9 flex items-center justify-center rounded-full transition active:scale-90 ${
                 isAttachOpen ? 'rotate-45' : 'rotate-0'
               }`}
@@ -620,9 +692,15 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             >
               <Plus className="w-5 h-5 transition-transform" />
             </button>
-            <button type="button" onClick={() => setInputText(p => p + '👍')}
+            <button
+              type="button"
+              onClick={() => {
+                setIsEmojiPickerOpen(prev => !prev);
+                setIsAttachOpen(false);
+              }}
               className="w-9 h-9 flex items-center justify-center rounded-full transition active:scale-90"
-              style={{ color: 'var(--text-2)' }}>
+              style={{ color: isEmojiPickerOpen ? 'var(--accent)' : 'var(--text-2)' }}
+            >
               <Smile className="w-5 h-5" />
             </button>
             <input
