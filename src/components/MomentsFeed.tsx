@@ -167,8 +167,7 @@ const INITIAL_SCENES: SceneItem[] = [
 ];
 
 export const MomentsFeed: React.FC = () => {
-  const [feedTab, setFeedTab] = useState<'forYou' | 'following'>('forYou');
-  const [activeSubTab, setActiveSubTab] = useState<'all' | 'scenes' | 'media'>('all');
+  const [feedTab, setFeedTab] = useState<'forYou' | 'following' | 'scenes'>('forYou');
   const [followingHandles, setFollowingHandles] = useState<string[]>(['@priyasharma']);
   const [scenes, setScenes] = useState<SceneItem[]>(INITIAL_SCENES);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -355,106 +354,63 @@ export const MomentsFeed: React.FC = () => {
     if (feedTab === 'following' && !followingHandles.includes(m.handle) && m.handle !== '@alexm') {
       return false;
     }
-    if (activeSubTab === 'media') return Boolean(m.image || m.video);
     return true;
   });
 
   return (
-    <div className="flex-1 h-full overflow-y-auto flex flex-col items-center" style={{ backgroundColor: 'var(--bg)' }}>
-      <div className="w-full max-w-xl px-3 sm:px-4 py-4 space-y-4">
-        {/* Top Header & Public Feed View Tabs */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between pb-1">
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-1)' }}>
-                  Public Square
-                </h1>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 text-blue-600 border border-blue-500/20 flex items-center gap-1">
-                  <Globe className="w-2.5 h-2.5" />
-                  Global
-                </span>
-              </div>
-              <p className="text-xs" style={{ color: 'var(--text-2)' }}>
-                Discover public creators and trending discussions
-              </p>
-            </div>
+    <div className="flex-1 h-full overflow-y-auto flex flex-col items-center select-none" style={{ backgroundColor: 'var(--bg)' }}>
+      <div className="w-full max-w-xl px-3 sm:px-4 py-3 space-y-3.5">
+        {/* Minimal Unified Top Tabs (Threads / X Style) */}
+        <div
+          className="grid grid-cols-3 p-1 rounded-2xl border shadow-xs"
+          style={{ backgroundColor: 'var(--bg-panel)', borderColor: 'var(--border)' }}
+        >
+          <button
+            onClick={() => setFeedTab('forYou')}
+            className={`py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 ${
+              feedTab === 'forYou' ? 'bg-white dark:bg-zinc-800 shadow-xs' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+            }`}
+            style={feedTab === 'forYou' ? { color: 'var(--text-1)' } : {}}
+          >
+            <Flame className={`w-3.5 h-3.5 ${feedTab === 'forYou' ? 'text-amber-500' : ''}`} />
+            <span>For You</span>
+          </button>
 
-            {/* Sub format filters (All, Scenes, Media) */}
-            <div className="flex items-center gap-1 p-1 rounded-xl" style={{ backgroundColor: 'var(--bg-panel)', border: '1px solid var(--border)' }}>
-              <button
-                onClick={() => setActiveSubTab('all')}
-                className="px-2.5 py-1 text-xs rounded-lg font-medium transition"
-                style={{
-                  backgroundColor: activeSubTab === 'all' ? 'var(--accent)' : 'transparent',
-                  color: activeSubTab === 'all' ? '#fff' : 'var(--text-2)'
-                }}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setActiveSubTab('scenes')}
-                className="px-2.5 py-1 text-xs rounded-lg font-medium transition flex items-center gap-1"
-                style={{
-                  backgroundColor: activeSubTab === 'scenes' ? 'var(--accent)' : 'transparent',
-                  color: activeSubTab === 'scenes' ? '#fff' : 'var(--text-2)'
-                }}
-              >
-                <Film className="w-3 h-3" />
-                Scenes
-              </button>
-              <button
-                onClick={() => setActiveSubTab('media')}
-                className="px-2.5 py-1 text-xs rounded-lg font-medium transition"
-                style={{
-                  backgroundColor: activeSubTab === 'media' ? 'var(--accent)' : 'transparent',
-                  color: activeSubTab === 'media' ? '#fff' : 'var(--text-2)'
-                }}
-              >
-                Media
-              </button>
-            </div>
-          </div>
-
-          {/* Primary Public Feed View Switcher: For You vs Following */}
-          <div className="grid grid-cols-2 p-1 rounded-2xl border bg-black/5 dark:bg-white/5" style={{ borderColor: 'var(--border)' }}>
-            <button
-              onClick={() => setFeedTab('forYou')}
-              className={`py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 ${
-                feedTab === 'forYou' ? 'bg-white dark:bg-zinc-800 shadow-xs' : 'text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
-              }`}
-              style={feedTab === 'forYou' ? { color: 'var(--text-1)' } : {}}
-            >
-              <Flame className={`w-3.5 h-3.5 ${feedTab === 'forYou' ? 'text-amber-500' : ''}`} />
-              <span>For You (Explore)</span>
-            </button>
-
-            <button
-              onClick={() => setFeedTab('following')}
-              className={`py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 ${
-                feedTab === 'following' ? 'bg-white dark:bg-zinc-800 shadow-xs' : 'text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
-              }`}
-              style={feedTab === 'following' ? { color: 'var(--text-1)' } : {}}
-            >
-              <UserCheck className={`w-3.5 h-3.5 ${feedTab === 'following' ? 'text-blue-500' : ''}`} />
-              <span>Following</span>
+          <button
+            onClick={() => setFeedTab('following')}
+            className={`py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 ${
+              feedTab === 'following' ? 'bg-white dark:bg-zinc-800 shadow-xs' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+            }`}
+            style={feedTab === 'following' ? { color: 'var(--text-1)' } : {}}
+          >
+            <UserCheck className={`w-3.5 h-3.5 ${feedTab === 'following' ? 'text-blue-500' : ''}`} />
+            <span>Following</span>
+            {followingHandles.length > 0 && (
               <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-blue-500/10 text-blue-600">
                 {followingHandles.length}
               </span>
-            </button>
-          </div>
+            )}
+          </button>
+
+          <button
+            onClick={() => setFeedTab('scenes')}
+            className={`py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 ${
+              feedTab === 'scenes' ? 'bg-white dark:bg-zinc-800 shadow-xs' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+            }`}
+            style={feedTab === 'scenes' ? { color: 'var(--text-1)' } : {}}
+          >
+            <Film className={`w-3.5 h-3.5 ${feedTab === 'scenes' ? 'text-purple-500' : ''}`} />
+            <span>Scenes</span>
+          </button>
         </div>
 
-        {/* Stories / Status Strip */}
-        <div
-          className="rounded-2xl p-3 flex gap-3 overflow-x-auto scrollbar-none items-center"
-          style={{ backgroundColor: 'var(--bg-panel)', border: '1px solid var(--border)' }}
-        >
+        {/* Stories: Clean Edge-to-Edge Strip */}
+        <div className="flex gap-3 overflow-x-auto scrollbar-none items-center py-0.5 px-1">
           {INITIAL_STORIES.map(story => (
-            <div key={story.id} className="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer group">
+            <div key={story.id} className="flex flex-col items-center gap-1 shrink-0 cursor-pointer group">
               <div className="relative">
                 <div
-                  className="w-13 h-13 rounded-full p-[2px] transition group-hover:scale-105"
+                  className="w-12 h-12 rounded-full p-[2px] transition group-hover:scale-105"
                   style={{
                     background: story.isSelf
                       ? 'var(--border)'
@@ -467,80 +423,27 @@ export const MomentsFeed: React.FC = () => {
                     src={story.avatar}
                     alt={story.name}
                     className="w-full h-full rounded-full object-cover"
-                    style={{ border: '2px solid var(--bg-panel)' }}
+                    style={{ border: '2px solid var(--bg)' }}
                   />
                 </div>
                 {story.isSelf && (
                   <div
                     className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-white text-[10px] font-bold shadow-sm"
-                    style={{ backgroundColor: 'var(--accent)', border: '2px solid var(--bg-panel)' }}
+                    style={{ backgroundColor: 'var(--accent)', border: '2px solid var(--bg)' }}
                   >
                     <Plus className="w-2.5 h-2.5 stroke-[3]" />
                   </div>
                 )}
               </div>
-              <span className="text-[11px] font-medium truncate max-w-[60px]" style={{ color: 'var(--text-2)' }}>
+              <span className="text-[10px] font-medium truncate max-w-[56px]" style={{ color: 'var(--text-2)' }}>
                 {story.name}
               </span>
             </div>
           ))}
         </div>
 
-        {/* Suggested Creators Carousel (Spotlight to follow) */}
-        {feedTab === 'forYou' && (
-          <div
-            className="rounded-2xl p-3 border shadow-xs space-y-2.5 overflow-hidden"
-            style={{ backgroundColor: 'var(--bg-panel)', borderColor: 'var(--border)' }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-bold" style={{ color: 'var(--text-1)' }}>
-                <Sparkles className="w-3.5 h-3.5 text-blue-500" />
-                <span>Featured Creators to Follow</span>
-              </div>
-              <span className="text-[10px] text-gray-400 font-medium">Public Directory</span>
-            </div>
-
-            <div className="flex gap-2.5 overflow-x-auto scrollbar-none pb-1">
-              {SUGGESTED_CREATORS.map(c => {
-                const isFollowing = followingHandles.includes(c.handle);
-                return (
-                  <div
-                    key={c.handle}
-                    className="rounded-xl p-3 border flex flex-col items-center text-center shrink-0 w-36 space-y-2 transition shadow-xs"
-                    style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)' }}
-                  >
-                    <div className="relative">
-                      <img src={c.avatar} alt={c.name} className="w-11 h-11 rounded-full object-cover" />
-                      {c.verified && (
-                        <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-500/20 absolute -bottom-1 -right-1" />
-                      )}
-                    </div>
-                    <div className="min-w-0 w-full">
-                      <p className="text-xs font-bold truncate leading-tight" style={{ color: 'var(--text-1)' }}>
-                        {c.name}
-                      </p>
-                      <p className="text-[10px] text-gray-400 truncate">{c.handle}</p>
-                      <p className="text-[9px] text-blue-500 font-semibold mt-0.5">{c.followers}</p>
-                    </div>
-                    <button
-                      onClick={() => toggleFollow(c.handle)}
-                      className={`w-full py-1 rounded-lg text-[11px] font-semibold transition active:scale-95 ${
-                        isFollowing
-                          ? 'border border-gray-300 dark:border-zinc-700 text-gray-600 dark:text-gray-300'
-                          : 'bg-blue-600 text-white shadow-xs'
-                      }`}
-                    >
-                      {isFollowing ? 'Following' : '+ Follow'}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         {/* SCENES TAB: 2-Column Grid */}
-        {activeSubTab === 'scenes' && (
+        {feedTab === 'scenes' && (
           <div className="grid grid-cols-2 gap-3 pb-12 animate-fade-in">
             {scenes.map((scene, index) => (
               <div
@@ -575,90 +478,69 @@ export const MomentsFeed: React.FC = () => {
           </div>
         )}
 
-        {/* FEED POSTS (For 'all' and 'media' tabs) */}
-        {activeSubTab !== 'scenes' && (
+        {/* FEED POSTS (For 'forYou' and 'following' tabs) */}
+        {feedTab !== 'scenes' && (
           <>
-            {/* Post Composer */}
+            {/* Minimalist 1-Line Post Composer (Threads / X Style) */}
             <form
               onSubmit={handlePublish}
-              className="rounded-2xl p-4 transition shadow-xs"
-              style={{ backgroundColor: 'var(--bg-panel)', border: '1px solid var(--border)' }}
+              className="rounded-2xl p-2.5 flex items-center gap-2.5 border shadow-xs transition"
+              style={{ backgroundColor: 'var(--bg-panel)', borderColor: 'var(--border)' }}
             >
-              <div className="flex gap-3">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80"
-                  alt="Alex Morgan"
-                  className="w-9 h-9 rounded-full object-cover shrink-0"
-                />
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-400">
-                    <span>Alex Morgan (@alexm)</span>
-                    <span>•</span>
-                    <span className="text-blue-500 flex items-center gap-1">
-                      <Globe className="w-2.5 h-2.5" />
-                      Public Post
-                    </span>
-                  </div>
-                  <textarea
-                    value={newPostText}
-                    onChange={e => setNewPostText(e.target.value)}
-                    placeholder="Broadcast an update to your public followers..."
-                    rows={2}
-                    className="w-full text-sm p-3 rounded-xl focus:outline-none resize-none transition"
-                    style={{
-                      backgroundColor: 'var(--bg-elevated)',
-                      color: 'var(--text-1)',
-                      border: '1px solid var(--border)'
-                    }}
-                  />
-
-                  {/* Selected Image Preview */}
-                  {selectedImage && (
-                    <div className="relative rounded-xl overflow-hidden max-h-52 w-fit border" style={{ borderColor: 'var(--border)' }}>
-                      <img src={selectedImage} alt="Upload preview" className="max-h-52 object-contain" />
-                      <button
-                        type="button"
-                        onClick={() => setSelectedImage(null)}
-                        className="absolute top-2 right-2 p-1 rounded-full bg-black/60 text-white hover:bg-black/80 transition"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Composer Actions */}
-                  <div className="flex justify-between items-center pt-1">
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        accept="image/*"
-                        onChange={handleImageSelect}
-                        className="hidden"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium hover:opacity-80 transition"
-                        style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-1)', border: '1px solid var(--border)' }}
-                      >
-                        <ImageIcon className="w-3.5 h-3.5 text-blue-500" />
-                        <span>Photo</span>
-                      </button>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={!newPostText.trim() && !selectedImage}
-                      className="px-4 py-1.5 text-xs font-semibold rounded-xl text-white active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-xs"
-                      style={{ backgroundColor: 'var(--accent)' }}
-                    >
-                      Publish Post
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80"
+                alt="Alex Morgan"
+                className="w-8 h-8 rounded-full object-cover shrink-0"
+              />
+              <input
+                type="text"
+                value={newPostText}
+                onChange={e => setNewPostText(e.target.value)}
+                placeholder="What's happening?"
+                className="flex-1 text-xs py-1.5 px-3 rounded-xl focus:outline-none transition"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  color: 'var(--text-1)'
+                }}
+              />
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-gray-400 hover:text-blue-500 transition"
+                title="Attach photo"
+              >
+                <ImageIcon className="w-4 h-4" />
+              </button>
+              <button
+                type="submit"
+                disabled={!newPostText.trim() && !selectedImage}
+                className="px-3 py-1.5 text-xs font-semibold rounded-xl text-white active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-xs shrink-0"
+                style={{ backgroundColor: 'var(--accent)' }}
+              >
+                Post
+              </button>
             </form>
+
+            {/* Selected Image Preview if attached */}
+            {selectedImage && (
+              <div className="relative rounded-xl overflow-hidden max-h-48 w-fit border" style={{ borderColor: 'var(--border)' }}>
+                <img src={selectedImage} alt="Upload preview" className="max-h-48 object-contain" />
+                <button
+                  type="button"
+                  onClick={() => setSelectedImage(null)}
+                  className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/60 text-white hover:bg-black/80 transition"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
 
             {/* Empty State when Following Tab is empty */}
             {displayedMoments.length === 0 && feedTab === 'following' && (
