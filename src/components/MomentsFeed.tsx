@@ -404,43 +404,45 @@ export const MomentsFeed: React.FC = () => {
           </button>
         </div>
 
-        {/* Stories: Clean Edge-to-Edge Strip */}
-        <div className="flex gap-3 overflow-x-auto scrollbar-none items-center py-0.5 px-1">
-          {INITIAL_STORIES.map(story => (
-            <div key={story.id} className="flex flex-col items-center gap-1 shrink-0 cursor-pointer group">
-              <div className="relative">
-                <div
-                  className="w-12 h-12 rounded-full p-[2px] transition group-hover:scale-105"
-                  style={{
-                    background: story.isSelf
-                      ? 'var(--border)'
-                      : story.hasUnseen
-                      ? 'linear-gradient(135deg, #3b82f6, #06b6d4, #10b981)'
-                      : 'var(--border)'
-                  }}
-                >
-                  <img
-                    src={story.avatar}
-                    alt={story.name}
-                    className="w-full h-full rounded-full object-cover"
-                    style={{ border: '2px solid var(--bg)' }}
-                  />
-                </div>
-                {story.isSelf && (
+        {/* Stories: Only in Following tab (Personal network updates) */}
+        {feedTab === 'following' && (
+          <div className="flex gap-3 overflow-x-auto scrollbar-none items-center py-1 px-1">
+            {INITIAL_STORIES.map(story => (
+              <div key={story.id} className="flex flex-col items-center gap-1 shrink-0 cursor-pointer group">
+                <div className="relative">
                   <div
-                    className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-white text-[10px] font-bold shadow-sm"
-                    style={{ backgroundColor: 'var(--accent)', border: '2px solid var(--bg)' }}
+                    className="w-12 h-12 rounded-full p-[2px] transition group-hover:scale-105"
+                    style={{
+                      background: story.isSelf
+                        ? 'var(--border)'
+                        : story.hasUnseen
+                        ? 'linear-gradient(135deg, #3b82f6, #06b6d4, #10b981)'
+                        : 'var(--border)'
+                    }}
                   >
-                    <Plus className="w-2.5 h-2.5 stroke-[3]" />
+                    <img
+                      src={story.avatar}
+                      alt={story.name}
+                      className="w-full h-full rounded-full object-cover"
+                      style={{ border: '2px solid var(--bg)' }}
+                    />
                   </div>
-                )}
+                  {story.isSelf && (
+                    <div
+                      className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-white text-[10px] font-bold shadow-sm"
+                      style={{ backgroundColor: 'var(--accent)', border: '2px solid var(--bg)' }}
+                    >
+                      <Plus className="w-2.5 h-2.5 stroke-[3]" />
+                    </div>
+                  )}
+                </div>
+                <span className="text-[10px] font-medium truncate max-w-[56px]" style={{ color: 'var(--text-2)' }}>
+                  {story.name}
+                </span>
               </div>
-              <span className="text-[10px] font-medium truncate max-w-[56px]" style={{ color: 'var(--text-2)' }}>
-                {story.name}
-              </span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* SCENES TAB: 2-Column Grid */}
         {feedTab === 'scenes' && (
