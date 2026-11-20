@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Send, Mic, Smile, Phone, Video, MoreVertical, CheckCheck, Sparkles, Plus, ShieldCheck, Reply, X, Image, FileText, Download, Camera } from 'lucide-react';
+import { ArrowLeft, Send, Mic, Smile, Phone, Video, MoreVertical, CheckCheck, Sparkles, Plus, ShieldCheck, Reply, X, Image, FileText, Download, Camera, Radar, UserPlus } from 'lucide-react';
 import { Chat, Message, MiniAppPayload } from '../types';
 import { MiniAppRenderer, VoicePlayer } from './MiniAppCards';
 import { EmojiPicker } from './EmojiPicker';
@@ -24,6 +24,7 @@ interface ChatAreaProps {
   onTyping: (isTyping: boolean) => void;
   onBack?: () => void;
   onStartVideoCall?: () => void;
+  onExchangeNumber?: (chatId: string) => void;
 }
 
 interface SwipeableBubbleProps {
@@ -239,7 +240,7 @@ const SwipeableBubble: React.FC<SwipeableBubbleProps> = ({
 
 export const ChatArea: React.FC<ChatAreaProps> = ({
   chat, messages, currentUserId, isCollapsing = false, transitionStage = 'idle', cardRect, typingUser, onSendMessage,
-  onToggleReaction, onUpdateMiniApp, onOpenMiniAppModal, onTyping, onBack, onStartVideoCall
+  onToggleReaction, onUpdateMiniApp, onOpenMiniAppModal, onTyping, onBack, onStartVideoCall, onExchangeNumber
 }) => {
   const isMorphingToCard = transitionStage === 'expanding' || transitionStage === 'collapsing' || isCollapsing;
   const [inputText, setInputText] = useState('');
@@ -486,6 +487,69 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Radar Ephemeral Banner & Phone Number Exchange */}
+      {chat && (chat.isRadar || chat.radarDetails) && !isMorphingToCard && (
+        <div
+          className="mx-3.5 mt-2.5 px-3.5 py-2.5 rounded-2xl border flex items-center justify-between gap-3 shadow-xs shrink-0 select-none animate-fadeIn"
+          style={{
+            backgroundColor: 'var(--bg-elevated)',
+            borderColor: chat.radarDetails?.exchangeStatus === 'exchanged' ? '#10b981' : 'var(--border)'
+          }}
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+              style={{
+                backgroundColor: chat.radarDetails?.exchangeStatus === 'exchanged' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(6, 182, 212, 0.12)',
+                color: chat.radarDetails?.exchangeStatus === 'exchanged' ? '#10b981' : '#06b6d4'
+              }}
+            >
+              <Radar className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold" style={{ color: 'var(--text-1)' }}>
+                  {chat.radarDetails?.exchangeStatus === 'exchanged' ? 'Saved Contact' : 'Radar Ephemeral Chat'}
+                </span>
+                {chat.radarDetails?.coach && (
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-md font-mono bg-black/5 dark:bg-white/10 text-blue-500 font-semibold">
+                    Coach {chat.radarDetails.coach}-{chat.radarDetails.seat}
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] truncate" style={{ color: 'var(--text-2)' }}>
+                {chat.radarDetails?.exchangeStatus === 'exchanged'
+                  ? `Phone: ${chat.radarDetails.phoneNumber || '+91 98201 44829'} • In Primary Contacts`
+                  : chat.radarDetails?.exchangeStatus === 'requested'
+                  ? 'Request sent. Waiting for traveler to accept...'
+                  : 'No phone numbers shared. Exchange numbers to move to Primary Chats.'}
+              </p>
+            </div>
+          </div>
+
+          {chat.radarDetails?.exchangeStatus !== 'exchanged' && (
+            <div className="shrink-0">
+              {chat.radarDetails?.exchangeStatus === 'requested' ? (
+                <span className="text-xs font-medium text-amber-500 flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 animate-spin" />
+                  <span>Sent...</span>
+                </span>
+              ) : (
+                <button
+                  onClick={() => onExchangeNumber && onExchangeNumber(chat.id)}
+                  className="px-3 py-1.5 rounded-xl text-white text-xs font-semibold shadow-xs transition active:scale-95 flex items-center gap-1.5 shrink-0"
+                  style={{ backgroundColor: 'var(--accent)' }}
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Exchange & Save Contact</span>
+                  <span className="sm:hidden">Save</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Message stream */}
       <div

@@ -34,6 +34,13 @@ export interface Chat {
   unreadCount: number;
   pinned?: boolean;
   participants: string[];
+  isRadar?: boolean;
+  radarDetails?: {
+    coach?: string;
+    seat?: string;
+    exchangeStatus?: 'none' | 'requested' | 'received' | 'exchanged';
+    phoneNumber?: string;
+  };
 }
 
 export interface User {

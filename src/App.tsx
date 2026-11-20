@@ -285,6 +285,79 @@ export function App() {
     }
   };
 
+  const handleExchangeNumber = (chatId: string) => {
+    // 1. Mark as requested
+    setChats(prev =>
+      prev.map(c => {
+        if (c.id === chatId) {
+          return {
+            ...c,
+            radarDetails: {
+              ...c.radarDetails,
+              exchangeStatus: 'requested'
+            }
+          };
+        }
+        return c;
+      })
+    );
+
+    // 2. Add local prompt message
+    setMessages(prev => [
+      ...prev,
+      {
+        id: `msg-${Date.now()}-req`,
+        chatId,
+        senderId: currentUser.id,
+        senderName: currentUser.name,
+        senderAvatar: currentUser.avatar,
+        text: '📲 Sent a request to exchange phone numbers and save contact.',
+        timestamp: 'Now',
+        type: 'text',
+        reactions: {},
+        status: 'delivered'
+      }
+    ]);
+
+    // 3. Simulate other traveler accepting after 2 seconds
+    setTimeout(() => {
+      const simulatedPhone = '+91 98201 44829';
+      setChats(prev =>
+        prev.map(c => {
+          if (c.id === chatId) {
+            return {
+              ...c,
+              isRadar: false, // Moved to primary chats!
+              status: `${simulatedPhone} • Saved Contact`,
+              radarDetails: {
+                ...c.radarDetails,
+                exchangeStatus: 'exchanged',
+                phoneNumber: simulatedPhone
+              }
+            };
+          }
+          return c;
+        })
+      );
+
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `msg-${Date.now()}-done`,
+          chatId,
+          senderId: 'system',
+          senderName: 'System',
+          senderAvatar: '',
+          text: `🤝 Mutual exchange accepted! Phone number saved (${simulatedPhone}) and moved to Primary Chats.`,
+          timestamp: 'Now',
+          type: 'text',
+          reactions: {},
+          status: 'delivered'
+        }
+      ]);
+    }, 2200);
+  };
+
   const handleTyping = (isTyping: boolean) => {
     if (socket && isConnected) {
       socket.emit('typing', {
@@ -466,6 +539,7 @@ export function App() {
                 onTyping={handleTyping}
                 onBack={handleBackFromChat}
                 onStartVideoCall={() => setIsVideoCallOpen(true)}
+                onExchangeNumber={handleExchangeNumber}
               />
             </div>
           </>
@@ -481,12 +555,18 @@ export function App() {
                 avatar: userAvatar,
                 isGroup: false,
                 online: true,
-                status: 'Connected via Radar',
+                status: 'Connected via Radar • Ephemeral',
                 lastMessage: 'Connected via Nexus Radar',
                 lastTimestamp: 'Now',
                 unreadCount: 0,
                 pinned: false,
-                participants: [currentUser.id, newChatId]
+                participants: [currentUser.id, newChatId],
+                isRadar: true,
+                radarDetails: {
+                  coach: 'B4',
+                  seat: '24',
+                  exchangeStatus: 'none'
+                }
               };
               setChats(prev => [newChat, ...prev]);
               setActiveChatId(newChatId);

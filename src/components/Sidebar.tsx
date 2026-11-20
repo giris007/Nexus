@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Plus, Pin, Users, Sparkles } from 'lucide-react';
+import { Search, Plus, Pin, Users, Sparkles, Radar } from 'lucide-react';
 import { Chat } from '../types';
 
 interface SidebarProps {
@@ -16,12 +16,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
   chats, activeChatId, isMobileChatOpen = false, onSelectChat, onNewChat, typingUsers, className = ''
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState<'all' | 'unread' | 'groups' | 'ai'>('all');
+  const [filter, setFilter] = useState<'all' | 'unread' | 'radar' | 'groups' | 'ai'>('all');
+
+  const radarCount = chats.filter(c => c.isRadar).length;
 
   const filteredChats = chats.filter(chat => {
     const match = chat.name.toLowerCase().includes(searchQuery.toLowerCase());
     if (!match) return false;
     if (filter === 'unread') return chat.unreadCount > 0;
+    if (filter === 'radar') return Boolean(chat.isRadar);
     if (filter === 'groups') return chat.isGroup;
     if (filter === 'ai') return chat.id === 'chat-ai';
     return true;
@@ -62,18 +65,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Filters */}
-        <div className="flex gap-1.5 overflow-x-auto pb-0.5">
-          {(['all', 'unread', 'groups', 'ai'] as const).map(f => {
+        <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+          {(['all', 'unread', 'radar', 'groups', 'ai'] as const).map(f => {
             const active = filter === f;
             return (
               <button key={f} onClick={() => setFilter(f)}
-                className="px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition active:scale-95"
+                className="px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition active:scale-95 flex items-center gap-1"
                 style={active
                   ? { backgroundColor: 'var(--accent)', color: '#fff' }
                   : { backgroundColor: 'var(--bg-input)', color: 'var(--text-2)', border: '1px solid var(--border)' }
                 }
               >
-                {f === 'ai' ? 'Copilot' : f.charAt(0).toUpperCase() + f.slice(1)}
+                <span>{f === 'ai' ? 'Copilot' : f.charAt(0).toUpperCase() + f.slice(1)}</span>
+                {f === 'radar' && radarCount > 0 && (
+                  <span
+                    className={`text-[9px] px-1 rounded-full font-bold ${
+                      active ? 'bg-white text-blue-600' : 'bg-cyan-500/20 text-cyan-600 dark:text-cyan-400'
+                    }`}
+                  >
+                    {radarCount}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -129,6 +141,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <div className="flex items-center justify-between mb-0.5">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <span className="text-sm font-medium truncate" style={{ color: 'var(--text-1)' }}>{chat.name}</span>
+                    {chat.isRadar && (
+                      <span className="flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 shrink-0">
+                        <Radar className="w-2.5 h-2.5" />
+                        <span>Radar</span>
+                      </span>
+                    )}
+                    {chat.radarDetails?.exchangeStatus === 'exchanged' && (
+                      <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                        Saved
+                      </span>
+                    )}
                     {chat.isGroup && <Users className="w-3 h-3 shrink-0" style={{ color: 'var(--text-3)' }} />}
                   </div>
                   <span className="text-[11px] ml-2 shrink-0" style={{ color: 'var(--text-3)' }}>
